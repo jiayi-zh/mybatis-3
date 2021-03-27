@@ -72,6 +72,7 @@ public class CachingExecutor implements Executor {
 
   @Override
   public int update(MappedStatement ms, Object parameterObject) throws SQLException {
+    // 判断是否需要清空缓存, Statement 块配置 flushCache="true"
     flushCacheIfRequired(ms);
     return delegate.update(ms, parameterObject);
   }
@@ -92,20 +93,29 @@ public class CachingExecutor implements Executor {
   @Override
   public <E> List<E> query(MappedStatement ms, Object parameterObject, RowBounds rowBounds, ResultHandler resultHandler, CacheKey key, BoundSql boundSql)
       throws SQLException {
+    // 从 MappedStatement 中读取缓存, MappedStatement 是应用级别的
     Cache cache = ms.getCache();
+    // 如果缓存不为空
     if (cache != null) {
+      // 判断是否需要清空缓存, Statement 块配置 flushCache="true"
       flushCacheIfRequired(ms);
+      // 若开启了缓存并且 resultHandler 为空
       if (ms.isUseCache() && resultHandler == null) {
         ensureNoOutParams(ms, boundSql);
+        // 从 TransactionalCacheManager 中读取缓存
         @SuppressWarnings("unchecked")
         List<E> list = (List<E>) tcm.getObject(cache, key);
+        // 如果取出来的list是空的
         if (list == null) {
+          // 查询数据库
           list = delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
+          // 将结果加入缓存
           tcm.putObject(cache, key, list); // issue #578 and #116
         }
         return list;
       }
     }
+    // 如果缓存为空, 委派包装的 Executor 执行数据库操作
     return delegate.query(ms, parameterObject, rowBounds, resultHandler, key, boundSql);
   }
 

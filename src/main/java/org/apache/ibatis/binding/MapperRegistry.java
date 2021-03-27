@@ -27,7 +27,7 @@ import org.apache.ibatis.session.Configuration;
 import org.apache.ibatis.session.SqlSession;
 
 /**
- * @author Clinton Begin
+ * @author Clinton Begin{@link org.apache.ibatis.binding.MapperMethod#execute(SqlSession, Object[])}
  * @author Eduardo Macarron
  * @author Lasse Voss
  */

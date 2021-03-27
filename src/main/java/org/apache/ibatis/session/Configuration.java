@@ -665,6 +665,7 @@ public class Configuration {
   }
 
   public Executor newExecutor(Transaction transaction, ExecutorType executorType) {
+    // ExecutorType 默认为 SIMPLE
     executorType = executorType == null ? defaultExecutorType : executorType;
     executorType = executorType == null ? ExecutorType.SIMPLE : executorType;
     Executor executor;
@@ -675,9 +676,11 @@ public class Configuration {
     } else {
       executor = new SimpleExecutor(this, transaction);
     }
+    // 如果开启了二级缓存, 将使用 CachingExecutor 包装 executor
     if (cacheEnabled) {
       executor = new CachingExecutor(executor);
     }
+    // 责任链模式拦截器
     executor = (Executor) interceptorChain.pluginAll(executor);
     return executor;
   }

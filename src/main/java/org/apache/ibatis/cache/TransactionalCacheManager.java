@@ -25,6 +25,8 @@ import org.apache.ibatis.cache.decorators.TransactionalCache;
  */
 public class TransactionalCacheManager {
 
+  // Cache 相当于每个 namespace， TransactionalCache 就是对应的缓存数据
+  // TransactionalCache 也是包装了 Cache, 提供了缓存未命中entriesMissedInCache等功能
   private final Map<Cache, TransactionalCache> transactionalCaches = new HashMap<>();
 
   public void clear(Cache cache) {

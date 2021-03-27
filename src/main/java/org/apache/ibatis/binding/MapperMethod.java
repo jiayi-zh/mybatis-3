@@ -104,6 +104,10 @@ public class MapperMethod {
     return result;
   }
 
+  /**
+   * 增删改操作会返回特殊值
+   *
+   */
   private Object rowCountResult(int rowCount) {
     final Object result;
     if (method.returnsVoid()) {
