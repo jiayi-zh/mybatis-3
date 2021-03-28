@@ -18,9 +18,12 @@
             </transactionManager>
             <dataSource type="UNPOOLED">
                 <property name="driver" value="com.mysql.cj.jdbc.Driver" />
-                <property name="url" value="jdbc:mysql://192.168.9.102:12003/db1?useAffectedRows=true" />
-                <property name="username" value="java" />
-                <property name="password" value="R$dXWU6ZMOG*wiQ9" />
+<!--                <property name="url" value="jdbc:mysql://192.168.9.102:12003/db1?useAffectedRows=true" />-->
+<!--                <property name="username" value="java" />-->
+<!--                <property name="password" value="R$dXWU6ZMOG*wiQ9" />-->
+                <property name="url" value="jdbc:mysql://127.0.0.1:3306/db1?useAffectedRows=true" />
+                <property name="username" value="root" />
+                <property name="password" value="123" />
             </dataSource>
         </environment>
     </environments>

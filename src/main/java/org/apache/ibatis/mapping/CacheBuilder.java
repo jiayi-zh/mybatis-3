@@ -110,6 +110,7 @@ public class CacheBuilder {
     if (implementation == null) {
       implementation = PerpetualCache.class;
       if (decorators.isEmpty()) {
+        // LruCache 使用 new LinkedHashMap<Object, Object>(size, .75F, true) 实现的LRU算法
         decorators.add(LruCache.class);
       }
     }
@@ -121,15 +122,23 @@ public class CacheBuilder {
       if (size != null && metaCache.hasSetter("size")) {
         metaCache.setValue("size", size);
       }
+      // 如果配置了缓存失效时间, 则将进行一次装饰
+      // ScheduledCache 采用惰性处理, 每次CRUD都会进行一次检查，如果发现超时则清空缓存
       if (clearInterval != null) {
         cache = new ScheduledCache(cache);
         ((ScheduledCache) cache).setClearInterval(clearInterval);
       }
+      // 如果缓存时可读写的，则需要加上序列化处理动作
+      // SerializedCache的实现就是Java对象的序列化与反序列化
       if (readWrite) {
         cache = new SerializedCache(cache);
       }
+      // 缓存命中统计及日志打印(debug模式)
       cache = new LoggingCache(cache);
+      // 所有的方法都加了 synchronized 关键字
       cache = new SynchronizedCache(cache);
+      // 如果配置阻塞， 则将进行一次装饰, 使得在获取缓存的时候先获取锁达到同步的目的，不支持分布式
+      // 使用 CountDownLatch 实现阻塞
       if (blocking) {
         cache = new BlockingCache(cache);
       }

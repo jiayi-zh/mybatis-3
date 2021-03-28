@@ -181,6 +181,7 @@ public class Configuration {
   }
 
   public Configuration() {
+    // 这里定义的常量可以在配置文件中直接使用
     typeAliasRegistry.registerAlias("JDBC", JdbcTransactionFactory.class);
     typeAliasRegistry.registerAlias("MANAGED", ManagedTransactionFactory.class);
 

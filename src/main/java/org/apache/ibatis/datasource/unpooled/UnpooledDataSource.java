@@ -219,9 +219,13 @@ public class UnpooledDataSource implements DataSource {
     return doGetConnection(props);
   }
 
+  // 每次都是获取新的连接
   private Connection doGetConnection(Properties properties) throws SQLException {
+    // 创建并缓存Driver
     initializeDriver();
+    // 创建新的连接
     Connection connection = DriverManager.getConnection(url, properties);
+    // 设置参数
     configureConnection(connection);
     return connection;
   }
@@ -247,12 +251,15 @@ public class UnpooledDataSource implements DataSource {
   }
 
   private void configureConnection(Connection conn) throws SQLException {
+    // 超时时间
     if (defaultNetworkTimeout != null) {
       conn.setNetworkTimeout(Executors.newSingleThreadExecutor(), defaultNetworkTimeout);
     }
+    // 自动提交
     if (autoCommit != null && autoCommit != conn.getAutoCommit()) {
       conn.setAutoCommit(autoCommit);
     }
+    // 隔离级别
     if (defaultTransactionIsolationLevel != null) {
       conn.setTransactionIsolation(defaultTransactionIsolationLevel);
     }
