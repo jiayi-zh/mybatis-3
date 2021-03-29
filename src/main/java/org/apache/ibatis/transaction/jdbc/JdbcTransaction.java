@@ -1,30 +1,29 @@
 /**
- *    Copyright 2009-2020 the original author or authors.
- *
- *    Licensed under the Apache License, Version 2.0 (the "License");
- *    you may not use this file except in compliance with the License.
- *    You may obtain a copy of the License at
- *
- *       http://www.apache.org/licenses/LICENSE-2.0
- *
- *    Unless required by applicable law or agreed to in writing, software
- *    distributed under the License is distributed on an "AS IS" BASIS,
- *    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *    See the License for the specific language governing permissions and
- *    limitations under the License.
+ * Copyright 2009-2020 the original author or authors.
+ * <p>
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * <p>
+ * http://www.apache.org/licenses/LICENSE-2.0
+ * <p>
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
 package org.apache.ibatis.transaction.jdbc;
-
-import java.sql.Connection;
-import java.sql.SQLException;
-
-import javax.sql.DataSource;
 
 import org.apache.ibatis.logging.Log;
 import org.apache.ibatis.logging.LogFactory;
 import org.apache.ibatis.session.TransactionIsolationLevel;
 import org.apache.ibatis.transaction.Transaction;
 import org.apache.ibatis.transaction.TransactionException;
+
+import javax.sql.DataSource;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 /**
  * {@link Transaction} that makes use of the JDBC commit and rollback facilities directly.
@@ -33,7 +32,6 @@ import org.apache.ibatis.transaction.TransactionException;
  * Ignores commit or rollback requests when autocommit is on.
  *
  * @author Clinton Begin
- *
  * @see JdbcTransactionFactory
  */
 public class JdbcTransaction implements Transaction {
@@ -45,6 +43,9 @@ public class JdbcTransaction implements Transaction {
   protected TransactionIsolationLevel level;
   protected boolean autoCommit;
 
+  /**
+   * 新建一个事务，但是只有在调用获取连接时才创建连接
+   */
   public JdbcTransaction(DataSource ds, TransactionIsolationLevel desiredLevel, boolean desiredAutoCommit) {
     dataSource = ds;
     level = desiredLevel;
@@ -106,8 +107,8 @@ public class JdbcTransaction implements Transaction {
       // Only a very poorly implemented driver would fail here,
       // and there's not much we can do about that.
       throw new TransactionException("Error configuring AutoCommit.  "
-          + "Your driver may not support getAutoCommit() or setAutoCommit(). "
-          + "Requested setting: " + desiredAutoCommit + ".  Cause: " + e, e);
+        + "Your driver may not support getAutoCommit() or setAutoCommit(). "
+        + "Requested setting: " + desiredAutoCommit + ".  Cause: " + e, e);
     }
   }
 
@@ -127,7 +128,7 @@ public class JdbcTransaction implements Transaction {
     } catch (SQLException e) {
       if (log.isDebugEnabled()) {
         log.debug("Error resetting autocommit to true "
-            + "before closing the connection.  Cause: " + e);
+          + "before closing the connection.  Cause: " + e);
       }
     }
   }
@@ -136,10 +137,13 @@ public class JdbcTransaction implements Transaction {
     if (log.isDebugEnabled()) {
       log.debug("Opening JDBC Connection");
     }
+    // 获取连接
     connection = dataSource.getConnection();
     if (level != null) {
+      // 设置隔离级别
       connection.setTransactionIsolation(level.getLevel());
     }
+    // 设置当前连接期望的自动提交
     setDesiredAutoCommit(autoCommit);
   }
 

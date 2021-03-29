@@ -20,12 +20,12 @@ import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.ibatis.transaction.jdbc.JdbcTransactionFactory;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 
 import java.io.Reader;
-import java.util.Properties;
 
 class MybatisOperateTest {
 
@@ -45,7 +45,6 @@ class MybatisOperateTest {
 
   /**
    * Mybatis基础操作
-   * {@link org.apache.ibatis.plugin.Interceptor#setProperties(Properties)}
    */
   @Test
   void testMybatisGeneralMetadata() {
@@ -72,4 +71,31 @@ class MybatisOperateTest {
     }
   }
 
+  /**
+   * Mybatis事务
+   */
+  @Test
+  void testMybatisTransaction() {
+    try {
+      SqlSession sqlSession1 = sqlSessionFactory.openSession();
+      Mapper mapper1 = sqlSession1.getMapper(Mapper.class);
+
+      User user = new User();
+      user.setId(1);
+      user.setName("jy-zh");
+      mapper1.insertUser(user);
+      // 将查询结果缓存
+      mapper1.getUser(1);
+      // 手动提交
+      sqlSession1.commit();
+
+      SqlSession sqlSession2 = sqlSessionFactory.openSession(true);
+      Mapper mapper2 = sqlSession2.getMapper(Mapper.class);
+      mapper2.getUser(1);
+
+      mapper2.deleteUser(1);
+    } catch (Exception e) {
+      Assertions.fail(e.getMessage());
+    }
+  }
 }
