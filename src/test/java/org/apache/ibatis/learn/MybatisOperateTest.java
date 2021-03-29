@@ -49,29 +49,24 @@ class MybatisOperateTest {
    */
   @Test
   void testMybatisGeneralMetadata() {
-    try (SqlSession sqlSession1 = sqlSessionFactory.openSession(); SqlSession sqlSession2 = sqlSessionFactory.openSession()) {
-      try {
-        Mapper mapper1 = sqlSession1.getMapper(Mapper.class);
-        Mapper mapper2 = sqlSession2.getMapper(Mapper.class);
+    try {
+      SqlSession sqlSession1 = sqlSessionFactory.openSession();
+      Mapper mapper1 = sqlSession1.getMapper(Mapper.class);
 
+      User user = new User();
+      user.setId(1);
+      user.setName("jy-zh");
+      mapper1.insertUser(user);
+      // 将查询结果缓存
+      mapper1.getUser(1);
+      // 手动提交
+      sqlSession1.commit();
 
-        User user = new User();
-        user.setId(1);
-        user.setName("jy-zh");
-        user.setId(1);
-        mapper1.insertUser(user);
-        sqlSession1.commit();
-//        mapper1.getUser(1);
-//        mapper1.getUser(1);
+      SqlSession sqlSession2 = sqlSessionFactory.openSession(true);
+      Mapper mapper2 = sqlSession2.getMapper(Mapper.class);
+      mapper2.getUser(1);
 
-        mapper2.getUser(1);
-        mapper2.getUser(1);
-
-
-        mapper1.deleteUser(1);
-      } finally {
-//        sqlSession.commit();
-      }
+      mapper2.deleteUser(1);
     } catch (Exception e) {
       Assertions.fail(e.getMessage());
     }

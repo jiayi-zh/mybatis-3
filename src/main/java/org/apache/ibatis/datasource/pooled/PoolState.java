@@ -25,7 +25,9 @@ public class PoolState {
 
   protected PooledDataSource dataSource;
 
+  // 空闲(idle)状态PooledConnection对象被放置到此集合中，表示当前闲置的没有被使用的PooledConnection集合
   protected final List<PooledConnection> idleConnections = new ArrayList<>();
+  // 如果 idleConnections 没有取到连接，则会查看 activeConnections 是否已满，如果没满的话则创建新的连接放在此集合中
   protected final List<PooledConnection> activeConnections = new ArrayList<>();
   protected long requestCount = 0;
   protected long accumulatedRequestTime = 0;

@@ -29,7 +29,7 @@
         <result property="sex" column="sex"/>
     </resultMap>
 
-    <select id="getUser" resultMap="userResultMap" flushCache="true">
+    <select id="getUser" resultMap="userResultMap" flushCache="false">
         select * from users where id = #{id}
     </select>
 

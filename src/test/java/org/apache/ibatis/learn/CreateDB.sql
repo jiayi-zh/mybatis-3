@@ -7,5 +7,3 @@ create table users
     sex  int
 );
 
-insert into users (id, name, sex);
-
